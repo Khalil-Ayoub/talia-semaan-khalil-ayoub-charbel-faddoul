@@ -43,3 +43,11 @@ Seven local tests passed on 17 October 2026 using real temporary SQLite and HTTP
 No real Postman/DB screenshots, nine-service run, real login verification, or final common report was produced. See the complete pending checklist in `docs/part3/EVIDENCE_CHECKLIST.md`. Review/adapt/explain the draft, resolve the two Part 2 agreements, merge with teammates, run all services, execute Postman and capture authentic evidence before submission. Each screenshot caption must contain Charbel Faddoul, API title and what it demonstrates.
 
 ZIP contains only `part3/`, `docs/part3/`, `postman/part3*`, `tests/test_part3.py`, with no enclosing directory or shared files. Shared dependencies stay external. GitHub branch/PR are delivered separately; Git history is actual development, not fabricated team contribution evidence.
+
+## GitHub handoff (Charbel Faddoul)
+
+Pushed branch: https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul/tree/charbel
+
+Pull request into main: https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul/pull/2
+
+Initial implementation commit: `a971ae9`; API/evidence/Postman documentation commit: `461ea7b`. These are actual commits under the confirmed identity, pushed through Charbel's authenticated account. A subsequent handoff documentation commit adds these links. No direct push to main, merge, force-push or teammate branch overwrite was performed.
