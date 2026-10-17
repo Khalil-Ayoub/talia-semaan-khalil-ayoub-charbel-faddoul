@@ -1,0 +1,4 @@
+{
+  "owners": {"part1": "Khalil Ayoub", "part2": "Talia Semaan", "part3": "Charbel Faddoul"},
+  "ports": {"users": 5001, "assets": 5002, "incidents": 5003, "threats": 5004, "logs": 5005, "reports": 5006, "vulnerabilities": 5007, "notifications": 5008, "playbooks": 5009}
+}
