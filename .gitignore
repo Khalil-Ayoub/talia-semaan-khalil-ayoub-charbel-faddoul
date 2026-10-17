@@ -7,3 +7,9 @@ data/*.db-*
 .env
 evidence/
 *.zip
+
+# Local handoff and packaging files
+prompts/
+deliveries/
+brief-extracted.txt
+scripts/build_handoffs.py
