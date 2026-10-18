@@ -1,0 +1,2162 @@
+{
+  "info": {
+    "name": "Part 3 — Charbel Faddoul",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Prepared development collection, not execution evidence. Run folders in order. Set real tokens for all four roles and numeric asset_id/analyst_id. The employee token creates the incident; analyst_id must match analyst_token. Missing-token and outage tests can be performed manually. Activity reports use shared login outcome labels by default. Never expose secrets in screenshots. Cleanup deletes only the demo playbook."
+  },
+  "item": [
+    {
+      "name": "1 Incidents: ordered scenario",
+      "item": [
+        {
+          "name": "POST /incidents",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Create Open incident; employee reporter is authenticated identity. Admin may include reporter_id.\nRoles: Admin/Employee. Expected HTTP 201. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Unexpected account access\",\n  \"description\": \"Investigate unexpected access on the selected lab asset\",\n  \"category\": \"Unauthorized access\",\n  \"severity\": \"High\",\n  \"asset_id\": {{asset_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });",
+                  "if (pm.response.code === 201) pm.environment.set(\"incident_id\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /incidents",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List all incidents including status and assigned_analyst_id.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /incidents/mine",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/mine",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List only incidents reported by authenticated employee.\nRoles: Employee. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT /incidents/{{incident_id}}/assign",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/assign",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Validate Active Security Analyst, save assignment, notify after commit.\nRoles: Admin. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_analyst_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /incidents/assigned",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/assigned",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List only incidents assigned to authenticated analyst.\nRoles: Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /incidents/{{incident_id}}",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Incident details and notes, ordered by note ID.\nRoles: Admin/Auditor/assigned Analyst/own Employee. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /incidents/{{incident_id}}/notes",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/notes",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Persist linked note with authenticated author and server timestamp.\nRoles: Admin/assigned Analyst. Expected HTTP 201. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note_content\": \"Reviewed authentication evidence\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Advance incident: Under Investigation",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Advance exactly one incident lifecycle state; server resolution time.\nRoles: Admin/assigned Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Investigation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Advance incident: Mitigated",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Advance exactly one incident lifecycle state; server resolution time.\nRoles: Admin/assigned Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Mitigated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Advance incident: Resolved",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Advance exactly one incident lifecycle state; server resolution time.\nRoles: Admin/assigned Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Resolved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Advance incident: Closed",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Advance exactly one incident lifecycle state; server resolution time.\nRoles: Admin/assigned Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 Reports: real sources required",
+      "item": [
+        {
+          "name": "GET /reports/summary",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/summary",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auditor_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Totals users/assets/incidents/threats; open_incidents, critical_threats, latest ten recent_activity.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /reports/incidents",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auditor_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, by_severity and by_status from authorized incident HTTP list.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /reports/assets",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/assets",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auditor_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, critical and by_type from authorized asset HTTP list.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /reports/threats",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/threats",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auditor_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, by_severity, by_type and latest ten recent_indicators.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /reports/vulnerabilities",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/vulnerabilities",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auditor_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, by_severity, by_status and critical.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /reports/activity",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/activity",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{auditor_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total activities, login_attempts, failed_logins and most_common_actions; uses shared login_succeeded/login_failed outcome labels by default.\nRoles: Admin/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3 Playbooks: two ordered actions",
+      "item": [
+        {
+          "name": "POST /playbooks",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Create categorized response procedure with authenticated created_by.\nRoles: Admin. Expected HTTP 201. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Account containment\",\n  \"description\": \"Collect evidence then contain access\",\n  \"incident_category\": \"Unauthorized access\",\n  \"severity\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });",
+                  "if (pm.response.code === 201) pm.environment.set(\"playbook_id\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /playbooks",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List playbook fields without child actions.\nRoles: Admin/Analyst/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add ordered action 1",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}/actions",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Append unique positive increasing step. Optional Active assigned_user_id; initial Pending.\nRoles: Admin/Analyst. Expected HTTP 201. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Collect evidence\",\n  \"step_number\": 1,\n  \"assigned_user_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });",
+                  "if (pm.response.code === 201) pm.environment.set(\"action_id\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add ordered action 2",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}/actions",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Append unique positive increasing step. Optional Active assigned_user_id; initial Pending.\nRoles: Admin/Analyst. Expected HTTP 201. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Contain access\",\n  \"step_number\": 2,\n  \"assigned_user_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });",
+                  "if (pm.response.code === 201) pm.environment.set(\"action2_id\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Later action blocked before earlier completion",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/actions/{{action2_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Optional status and/or assigned_user_id. Next-state only, earlier steps complete, Active assignee; completed immutable.\nRoles: Admin/Analyst. Expected HTTP 409. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "action_id: In Progress",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/actions/{{action_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Optional status and/or assigned_user_id. Next-state only, earlier steps complete, Active assignee; completed immutable.\nRoles: Admin/Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "action_id: Completed",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/actions/{{action_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Optional status and/or assigned_user_id. Next-state only, earlier steps complete, Active assignee; completed immutable.\nRoles: Admin/Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "action2_id: In Progress",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/actions/{{action2_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Optional status and/or assigned_user_id. Next-state only, earlier steps complete, Active assignee; completed immutable.\nRoles: Admin/Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "action2_id: Completed",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/actions/{{action2_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Optional status and/or assigned_user_id. Next-state only, earlier steps complete, Active assignee; completed immutable.\nRoles: Admin/Analyst. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /playbooks/{{playbook_id}}",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Retrieve ordered actions and per-action history snapshots.\nRoles: Admin/Analyst/Auditor. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4 Errors: use scenario records",
+      "item": [
+        {
+          "name": "401 invalid token: POST /incidents",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Create Open incident; employee reporter is authenticated identity. Admin may include reporter_id.\nRoles: Admin/Employee. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Unexpected account access\",\n  \"description\": \"Investigate unexpected access on the selected lab asset\",\n  \"category\": \"Unauthorized access\",\n  \"severity\": \"High\",\n  \"asset_id\": {{asset_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /incidents",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List all incidents including status and assigned_analyst_id.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /incidents/assigned",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/assigned",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List only incidents assigned to authenticated analyst.\nRoles: Analyst. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /incidents/mine",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/mine",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List only incidents reported by authenticated employee.\nRoles: Employee. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /incidents/{{incident_id}}",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Incident details and notes, ordered by note ID.\nRoles: Admin/Auditor/assigned Analyst/own Employee. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: PUT /incidents/{{incident_id}}/assign",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/assign",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Validate Active Security Analyst, save assignment, notify after commit.\nRoles: Admin. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_analyst_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: PUT /incidents/{{incident_id}}/status",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Advance exactly one incident lifecycle state; server resolution time.\nRoles: Admin/assigned Analyst. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Investigation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: POST /incidents/{{incident_id}}/notes",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/notes",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Persist linked note with authenticated author and server timestamp.\nRoles: Admin/assigned Analyst. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note_content\": \"Reviewed authentication evidence\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /reports/summary",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/summary",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Totals users/assets/incidents/threats; open_incidents, critical_threats, latest ten recent_activity.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /reports/incidents",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, by_severity and by_status from authorized incident HTTP list.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /reports/assets",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/assets",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, critical and by_type from authorized asset HTTP list.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /reports/threats",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/threats",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, by_severity, by_type and latest ten recent_indicators.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /reports/vulnerabilities",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/vulnerabilities",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total, by_severity, by_status and critical.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /reports/activity",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/activity",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Total activities, login_attempts, failed_logins and most_common_actions; uses shared login_succeeded/login_failed outcome labels by default.\nRoles: Admin/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: POST /playbooks",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Create categorized response procedure with authenticated created_by.\nRoles: Admin. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Account containment\",\n  \"description\": \"Collect evidence then contain access\",\n  \"incident_category\": \"Unauthorized access\",\n  \"severity\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /playbooks",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. List playbook fields without child actions.\nRoles: Admin/Analyst/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: GET /playbooks/{{playbook_id}}",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Retrieve ordered actions and per-action history snapshots.\nRoles: Admin/Analyst/Auditor. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: POST /playbooks/{{playbook_id}}/actions",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}/actions",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Append unique positive increasing step. Optional Active assigned_user_id; initial Pending.\nRoles: Admin/Analyst. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Collect access evidence\",\n  \"step_number\": 1,\n  \"assigned_user_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: PUT /actions/{{action_id}}/status",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/actions/{{action_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Optional status and/or assigned_user_id. Next-state only, earlier steps complete, Active assignee; completed immutable.\nRoles: Admin/Analyst. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "401 invalid token: DELETE /playbooks/{{playbook_id}}",
+          "request": {
+            "method": "DELETE",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{invalid_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Delete parent and cascade actions/history; use a disposable demo playbook.\nRoles: Admin. Expected HTTP 401. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "400 invalid severity",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Create Open incident; employee reporter is authenticated identity. Admin may include reporter_id.\nRoles: Admin/Employee. Expected HTTP 400. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Unexpected account access\",\n  \"description\": \"Investigate unexpected access on the selected lab asset\",\n  \"category\": \"Unauthorized access\",\n  \"severity\": \"Urgent\",\n  \"asset_id\": {{asset_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "404 missing incident",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/2147483647",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Incident details and notes, ordered by note ID.\nRoles: Admin/Auditor/assigned Analyst/own Employee. Expected HTTP 404. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "403 employee assignment",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/assign",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Validate Active Security Analyst, save assignment, notify after commit.\nRoles: Admin. Expected HTTP 403. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assigned_analyst_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "400 reverse lifecycle",
+          "request": {
+            "method": "PUT",
+            "url": "http://{{host}}:{{incidents_port}}/{{owner_prefix}}/incidents/{{incident_id}}/status",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Advance exactly one incident lifecycle state; server resolution time.\nRoles: Admin/assigned Analyst. Expected HTTP 400. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Open\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "409 duplicate action step",
+          "request": {
+            "method": "POST",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}/actions",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Charbel Faddoul. Append unique positive increasing step. Optional Active assigned_user_id; initial Pending.\nRoles: Admin/Analyst. Expected HTTP 409. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Collect access evidence\",\n  \"step_number\": 1,\n  \"assigned_user_id\": {{analyst_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "403 employee report",
+          "request": {
+            "method": "GET",
+            "url": "http://{{host}}:{{reports_port}}/{{owner_prefix}}/reports/summary",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{employee_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Totals users/assets/incidents/threats; open_incidents, critical_threats, latest ten recent_activity.\nRoles: Admin/Auditor. Expected HTTP 403. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "403 analyst deletion",
+          "request": {
+            "method": "DELETE",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{analyst_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Delete parent and cascade actions/history; use a disposable demo playbook.\nRoles: Admin. Expected HTTP 403. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5 Cleanup: deletes demo history",
+      "item": [
+        {
+          "name": "DELETE /playbooks/{{playbook_id}}",
+          "request": {
+            "method": "DELETE",
+            "url": "http://{{host}}:{{playbooks_port}}/{{owner_prefix}}/playbooks/{{playbook_id}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [],
+            "description": "Charbel Faddoul. Delete parent and cascade actions/history; use a disposable demo playbook.\nRoles: Admin. Expected HTTP 200. Path IDs are positive integers. No query parameters. Responses use status/data or status/message. These are prepared requests, not recorded execution evidence. Use real accounts and a disposable demo database."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Shared JSON envelope\", function () { const b = pm.response.json(); pm.expect(b.status).to.eql(pm.response.code < 400 ? \"success\" : \"error\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
