@@ -149,6 +149,7 @@ class FullSystemTests(unittest.TestCase):
             request('notifications', 'DELETE', f'/notifications/{nid}', token=admin)
             logs = request('logs', 'GET', '/logs', token=auditor)
             labels = {row['action'] for row in logs}
+            self.assertTrue({'users', 'assets', 'threats', 'vulnerabilities', 'incidents', 'playbooks', 'notifications'} <= {row['related_service'] for row in logs})
             self.assertTrue({'notification_creation_requested', 'notification_read_requested', 'notification_deletion_requested'} <= labels)
             for kind in ('summary', 'incidents', 'assets', 'threats', 'vulnerabilities', 'activity'):
                 report = request('reports', 'GET', '/reports/' + kind, token=auditor)

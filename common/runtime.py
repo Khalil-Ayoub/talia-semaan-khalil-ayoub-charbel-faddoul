@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
-from flask import Flask, g, jsonify, request
+from flask import Flask, current_app, g, jsonify, request
 from werkzeug.exceptions import HTTPException
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,7 +116,7 @@ def audit(action, description, severity='Information'):
     return call('logs', 'POST', '/internal/logs', {
         'user_id': getattr(g, 'user', {}).get('id'), 'action': action,
         'description': description, 'severity': severity,
-        'related_service': request.url_rule.endpoint.split('.')[0] if request.url_rule else 'unknown'
+        'related_service': current_app.name
     }, internal=True)
 
 
