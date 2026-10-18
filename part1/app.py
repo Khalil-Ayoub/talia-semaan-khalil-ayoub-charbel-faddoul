@@ -158,6 +158,7 @@ class ResourceService:
                     if not value.isdigit() or int(value) < 1:
                         raise APIError('asset_id must be a positive integer')
                     clauses.append('asset_id=?')
+                    positive_id(int(value), 'asset_id')
                     values.append(int(value))
                 else:
                     # instr treats user input as literal text, including SQL wildcards.
