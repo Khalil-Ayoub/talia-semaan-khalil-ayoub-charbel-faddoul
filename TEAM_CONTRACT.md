@@ -34,7 +34,7 @@ Roles exactly: `Security Administrator`, `Security Analyst`, `Regular Employee/U
 
 Public clients send `Authorization: Bearer TOKEN`. Part 2 owns password hashing, login, signed expiring tokens or opaque sessions, and current user verification. Every verification must reread the current account role/status and reject inactive, suspended, or deleted accounts. No trusting role headers or client-submitted role claims.
 
-All processes share an environment `SERVICE_SECRET` (a sufficiently long random value, never committed). Internal endpoints require `X-Service-Key` and constant-time secret comparison. Never expose service credentials to regular clients. Part 2 must supply:
+All processes share an environment `SERVICE_SECRET` (a sufficiently long random value, never committed). Internal endpoints require `X-Service-Key` and constant-time secret comparison. Never expose service credentials to regular clients. Part 2 supplies:
 
 1. `POST /OWNER/internal/verify`, users port. Body `{"token":"..."}`. Success data: `{"id":1,"full_name":"...","role":"Security Administrator","account_status":"Active"}`. Invalid tokens return 401, not 200. Internal access bypasses public user-management permissions but verifies the token's actual identity.
 2. `GET /OWNER/users/id/<id>`, users port. Public bearer authentication, admin/auditor only. Return safe user data including id and role, or 404. This necessary helper avoids confusing numeric IDs with usernames and validates asset owners and assigned analysts.
@@ -58,3 +58,17 @@ Automatic logs include successful and failed login, user creation/deletion, role
 - Playbook actions are ordered and history is stored in `action_history`; include history when retrieving a playbook. Completed actions should not be silently rewritten without an explicit policy. Deletion cascades child actions/history; audit the deletion separately.
 - Report values must be calculated, never hardcoded; fetch users/assets/incidents/threats/logs/vulnerabilities via APIs with caller's bearer token. Auditor/admin can access required lists.
 - Part 1 creates threat alerts for the creating administrator and vulnerability alerts for the affected asset owner. Part 3 creates incident assignment notifications for the assigned analyst. Record selection policies in report. No real email/SMS delivery is required. If alert delivery fails after a committed change, return the saved record with an explicit `notification_warning`; do not claim delivery.
+
+## Integrated behavior
+
+Users use the canonical created_date and last_login_date columns. Part 2 uses the shared URL builder with normalized leading slashes. All notification changes emit audit records outside write transactions.
+
+GET /OWNER/internal/users/<id> on port 5001 requires X-Service-Key and returns only id, role, account_status and deleted_at for a non-deleted account. Playbooks use this endpoint to validate assignees without granting public user-management access to analysts.
+
+The shared login action names are login_succeeded and login_failed. Activity reports use them by default; optional PART3_LOGIN_SUCCESS_ACTION and PART3_LOGIN_FAILURE_ACTION override them only for a coordinated change. Tokens are signed and expire after eight hours, with current account state checked on every protected request.
+
+Positive IDs and step numbers must fit SQLite's signed 64-bit integer range. An out-of-range request is rejected with 400.
+
+Run all nine processes using python run_services.py with SERVICE_SECRET set. After startup, bootstrap the first administrator using python -m part2.bootstrap_admin --full-name "Admin Name" --username admin --email admin@example.test --department Security. Use the same SERVICE_SECRET in that terminal. Password entry is interactive, or BOOTSTRAP_ADMIN_PASSWORD may supply a local value. Do not commit credentials.
+
+Run python -m unittest discover -s tests -p "test_*.py" -v after extracting all three parts. The integration test runs all nine real applications with temporary SQLite and local HTTP; it does not replace service implementations. The isolated service suites remain useful for focused checks.

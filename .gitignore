@@ -13,3 +13,16 @@ prompts/
 deliveries/
 brief-extracted.txt
 scripts/build_handoffs.py
+output/
+tmp/
+docs/part1/REPORT_DRAFT.md
+docs/part1/REVIEW_GUIDE.md
+docs/part1/EVIDENCE_CHECKLIST.md
+docs/part1/TEST_RESULTS.md
+part1/INTEGRATION_NOTES.md
+docs/part2/REPORT_FRAGMENT.md
+docs/part2/EVIDENCE_CHECKLIST.md
+docs/part2/REVIEW_CHECKLIST.md
+docs/part3/REPORT_FRAGMENT.md
+docs/part3/EVIDENCE_CHECKLIST.md
+docs/part3/PR_DESCRIPTION.md
