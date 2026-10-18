@@ -10,7 +10,7 @@ Python, Flask and SQLite backend for reporting, investigating and responding to 
 | Talia Semaan | Users and Identity, Audit Logging, Notifications | talia |
 | Charbel Faddoul | Incidents, Security Reports, Playbooks | charbel |
 
-Shared runtime, database schema and API conventions are in common/ and TEAM_CONTRACT.md. Each member develops assigned services on their branch and submits a pull request to main. Implementations are being integrated; shared starter files alone are not a complete running system.
+Shared runtime, database schema and API conventions are in common/ and TEAM_CONTRACT.md. Each member develops assigned services on their branch and submits a pull request to main. Extract all three personal parts alongside the shared files before running the complete system.
 
 ## Setup
 
@@ -37,3 +37,15 @@ API routes start with the owner's full name from team_config.json, for example /
 ## Testing
 
 As implementations are added, run their tests, for example `python -m unittest tests.test_part1 -v`. Isolated tests may substitute external service dependencies; run integration checks against all real services separately. Postman collections and API documentation are stored in each member's owned paths listed in TEAM_CONTRACT.md.
+
+## Complete system startup
+
+1. Install requirements in your virtual environment.
+2. Set SERVICE_SECRET to a local random value of at least 32 characters.
+3. Run `python run_services.py` to start all nine processes.
+4. In another terminal with the same secret, run `python -m part2.bootstrap_admin --full-name "Admin Name" --username admin --email admin@example.test --department Security` and enter a local password of at least 12 characters.
+5. Log in through Postman and use the returned bearer token. Create accounts with each required role before exercising permission scenarios.
+
+The launcher stops all services together on Ctrl+C. Login action labels are coordinated by default; activity reports need no extra environment settings.
+
+Run all tests with `python -m unittest discover -s tests -p "test_*.py" -v`. The full-system test uses all nine actual applications, real HTTP, real password verification and temporary SQLite. These automated checks do not replace the final Postman and database screenshots.

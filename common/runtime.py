@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
-from flask import Flask, g, jsonify, request
+from flask import Flask, current_app, g, jsonify, request
 from werkzeug.exceptions import HTTPException
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,6 +19,9 @@ ANALYST = 'Security Analyst'
 EMPLOYEE = 'Regular Employee/User'
 AUDITOR = 'Auditor'
 LEVELS = ('Low', 'Medium', 'High', 'Critical')
+LOGIN_SUCCESS_ACTION = 'login_succeeded'
+LOGIN_FAILURE_ACTION = 'login_failed'
+MAX_SQLITE_INTEGER = 2**63 - 1
 
 
 def now():
@@ -53,7 +56,7 @@ def db():
 
 
 def make_app(service):
-    app = Flask(service)
+    app = Flask(service, static_folder=None)
     @app.teardown_appcontext
     def close(_error):
         connection = g.pop('db', None)
@@ -113,7 +116,7 @@ def audit(action, description, severity='Information'):
     return call('logs', 'POST', '/internal/logs', {
         'user_id': getattr(g, 'user', {}).get('id'), 'action': action,
         'description': description, 'severity': severity,
-        'related_service': request.url_rule.endpoint.split('.')[0] if request.url_rule else 'unknown'
+        'related_service': current_app.name
     }, internal=True)
 
 
@@ -160,11 +163,12 @@ def choice(data, key, values):
 
 
 def positive_id(value, name='id'):
-    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-        raise APIError(f'{name} must be a positive integer')
+    if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= MAX_SQLITE_INTEGER:
+        raise APIError(f'{name} must be an integer between 1 and {MAX_SQLITE_INTEGER}')
 
 
 def fetch(table, record_id):
+    positive_id(record_id)
     row = db().execute(f'SELECT * FROM {table} WHERE id=?', (record_id,)).fetchone()
     if row is None:
         raise APIError('Record not found', 404)
