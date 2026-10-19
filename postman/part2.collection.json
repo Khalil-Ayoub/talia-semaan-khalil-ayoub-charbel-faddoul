@@ -1,0 +1,571 @@
+{
+  "info": {
+    "name": "Part 2 - Talia Semaan",
+    "description": "Users, audit logs, and notifications. Requests document expected behavior; execute only against the team's own running services. No request output in this collection is evidence until captured from a real run.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "usersBase",
+      "value": "http://127.0.0.1:5001/talia-semaan"
+    },
+    {
+      "key": "logsBase",
+      "value": "http://127.0.0.1:5005/talia-semaan"
+    },
+    {
+      "key": "notificationsBase",
+      "value": "http://127.0.0.1:5008/talia-semaan"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "serviceSecret",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "username",
+      "value": "admin"
+    },
+    {
+      "key": "logId",
+      "value": "1"
+    },
+    {
+      "key": "notificationId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register regular account",
+          "request": {
+            "method": "POST",
+            "description": "Public registration. Required JSON: full_name, username, email, password (12+ characters), department, role. Expected 201 safe user; 400 invalid fields/email/password; 403 privileged role; 409 duplicate username/email.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Example Employee\",\n  \"username\": \"employee1\",\n  \"email\": \"employee1@example.test\",\n  \"password\": \"Change-this-long-password\",\n  \"department\": \"Operations\",\n  \"role\": \"Regular Employee/User\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/users/register"
+          }
+        },
+        {
+          "name": "Login with username",
+          "request": {
+            "method": "POST",
+            "description": "Public login by username. Expected 200 with data.token and safe user; 400 malformed body; 401 invalid credentials/inactive account; 503 audit dependency unavailable. A test script stores the returned token in the collection variable.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"YOUR_LOCAL_PASSWORD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/users/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login with email",
+          "request": {
+            "method": "POST",
+            "description": "Public login by email. Expected 200 with data.token; 400 malformed body; 401 invalid credentials/inactive account. Use a real local account and password.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employee1@example.test\",\n  \"password\": \"YOUR_LOCAL_PASSWORD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/users/login"
+          }
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor only. Expected 200 array of safe non-deleted users; 401 missing/invalid token; 403 other roles.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{usersBase}}/users"
+          }
+        },
+        {
+          "name": "Get user by username",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor may read any user; an employee may read only self. Expected 200 safe user; 401/403/404 for authentication, permission, or missing user.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{usersBase}}/users/{{username}}"
+          }
+        },
+        {
+          "name": "Get user by numeric ID",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor helper for cross-service owner/analyst validation. Expected 200 safe user; 401/403/404 as applicable.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{usersBase}}/users/id/{{userId}}"
+          }
+        },
+        {
+          "name": "Update own profile",
+          "request": {
+            "method": "PUT",
+            "description": "Admin or owning employee may update full_name, email, department only. Expected 200 safe user; 400 invalid/unknown field; 403 wrong owner/role; 404 missing; 409 duplicate email.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Operations\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Change user role",
+          "request": {
+            "method": "PUT",
+            "description": "Admin only. Set one role; role removal means Regular Employee/User. Expected 200; 400 invalid role; 401/403/404 otherwise. Existing tokens are checked against the current role.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Security Analyst\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/users/{{userId}}/role"
+          }
+        },
+        {
+          "name": "Change account status",
+          "request": {
+            "method": "PUT",
+            "description": "Admin only. Status values: Active, Inactive, Suspended. Expected 200; 400 invalid status; 401/403/404 otherwise. Inactive/suspended accounts cannot authenticate or verify.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"account_status\": \"Suspended\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/users/{{userId}}/status"
+          }
+        },
+        {
+          "name": "Delete user logically",
+          "request": {
+            "method": "DELETE",
+            "description": "Admin only; sets deleted_at and preserves foreign-key history. Expected 200 deleted ID; 401/403/404 otherwise. Destructive: use only a disposable test account.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{usersBase}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Internal token verification",
+          "request": {
+            "method": "POST",
+            "description": "Service-to-service only with X-Service-Key. Required JSON token. Expected 200 current id/full_name/role/account_status; 401 invalid/expired/inactive/deleted; 403 bad key.",
+            "header": [
+              {
+                "key": "X-Service-Key",
+                "value": "{{serviceSecret}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{usersBase}}/internal/verify"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "Create log",
+          "request": {
+            "method": "POST",
+            "description": "Admin only. Required user_id (integer/null), action, description, severity, related_service. Expected 201 with server timestamp; 400 invalid; 401/403; 409 relationship conflict.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{userId}},\n  \"action\": \"asset_review\",\n  \"description\": \"Requested a routine asset review\",\n  \"severity\": \"Information\",\n  \"related_service\": \"Assets\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{logsBase}}/logs"
+          }
+        },
+        {
+          "name": "List logs",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor only. Expected 200 array; 401 missing/invalid token; 403 other roles.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{logsBase}}/logs"
+          }
+        },
+        {
+          "name": "Get log detail",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor/Analyst only. Expected 200 record; 401/403/404 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{logsBase}}/logs/{{logId}}"
+          }
+        },
+        {
+          "name": "Search logs",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor/Analyst. Optional query filters: user_id, date=YYYY-MM-DD, action, severity, related_service. Expected 200 array (empty is valid); 400 invalid filter; 401/403 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{logsBase}}/logs/search?user_id={{userId}}&severity=Information"
+          }
+        },
+        {
+          "name": "Logs by user",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor only. Expected 200 matching array, including [] when no records; 401/403 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{logsBase}}/logs/user/{{userId}}"
+          }
+        },
+        {
+          "name": "Delete log",
+          "request": {
+            "method": "DELETE",
+            "description": "Admin only. Expected 200 deleted ID; 401/403/404 otherwise. Destructive: use a disposable log. There is intentionally no update endpoint.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{logsBase}}/logs/{{logId}}"
+          }
+        },
+        {
+          "name": "Internal log write",
+          "request": {
+            "method": "POST",
+            "description": "Service-key-only write; accepts user_id null for unknown/unauthenticated events. Required action, description, severity, related_service. Timestamp is server-generated. Expected 201; 400 invalid; 403 bad key; 409 bad user relation.",
+            "header": [
+              {
+                "key": "X-Service-Key",
+                "value": "{{serviceSecret}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": null,\n  \"action\": \"login_failed\",\n  \"description\": \"Login failed for an unknown account\",\n  \"severity\": \"Warning\",\n  \"related_service\": \"Users\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{logsBase}}/internal/logs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Create notification",
+          "request": {
+            "method": "POST",
+            "description": "Admin only. Required user_id, title, message, notification_type, severity. Types: Incident Assignment, Security Alert, System Notification, Threat Alert, Vulnerability Alert. Status/timestamps generated. Expected 201; 400 invalid; 401/403; 404 inactive/missing recipient.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{userId}},\n  \"title\": \"Security review\",\n  \"message\": \"A security review was requested.\",\n  \"notification_type\": \"System Notification\",\n  \"severity\": \"Low\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{notificationsBase}}/notifications"
+          }
+        },
+        {
+          "name": "User notifications",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor any recipient; Analyst/Employee self only. Expected 200 array (empty is valid); 401/403 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{notificationsBase}}/notifications/user/{{userId}}"
+          }
+        },
+        {
+          "name": "Get notification detail",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor any record; Analyst/Employee own only. Expected 200; 401/403/404 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{notificationsBase}}/notifications/{{notificationId}}"
+          }
+        },
+        {
+          "name": "Mark notification read",
+          "request": {
+            "method": "PUT",
+            "description": "Admin or owning Analyst/Employee. No body. Expected 200 status Read and first read_date; repeated calls preserve that timestamp; 401/403/404 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{notificationsBase}}/notifications/{{notificationId}}/read"
+          }
+        },
+        {
+          "name": "Search notifications",
+          "request": {
+            "method": "GET",
+            "description": "Admin/Auditor; Analyst receives only own notifications. Filters: user_id, notification_type, severity, status. Regular employees cannot search. Expected 200 array; 400 invalid; 401/403 otherwise.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{notificationsBase}}/notifications/search?status=Unread&severity=Medium"
+          }
+        },
+        {
+          "name": "Delete notification",
+          "request": {
+            "method": "DELETE",
+            "description": "Admin only. Expected 200 deleted ID; 401/403/404 otherwise. Destructive: use a disposable notification.",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{notificationsBase}}/notifications/{{notificationId}}"
+          }
+        },
+        {
+          "name": "Internal notification write",
+          "request": {
+            "method": "POST",
+            "description": "Service-key-only notification creation. Required user_id, title, message, notification_type, severity. Status Unread, creation_date and null read_date are generated. Expected 201; 400 invalid; 403 bad key; 404 missing/inactive recipient.",
+            "header": [
+              {
+                "key": "X-Service-Key",
+                "value": "{{serviceSecret}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{userId}},\n  \"title\": \"Incident assignment\",\n  \"message\": \"An incident was assigned to you.\",\n  \"notification_type\": \"Incident Assignment\",\n  \"severity\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{notificationsBase}}/internal/notifications"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Internal user validation",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Service-Key",
+            "value": "{{serviceSecret}}"
+          }
+        ],
+        "url": "{{usersBase}}/internal/users/{{userId}}",
+        "description": "Service-key-only minimal user lookup for assignee validation. Returns id, role, account_status and deleted_at; 403 without key, 404 for missing/deleted user."
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "part2-talia-semaan-local",
+  "name": "Part 2 - Talia Semaan Local",
+  "values": [
+    {"key":"usersBase","value":"http://127.0.0.1:5001/talia-semaan","type":"default","enabled":true},
+    {"key":"logsBase","value":"http://127.0.0.1:5005/talia-semaan","type":"default","enabled":true},
+    {"key":"notificationsBase","value":"http://127.0.0.1:5008/talia-semaan","type":"default","enabled":true},
+    {"key":"token","value":"","type":"secret","enabled":true},
+    {"key":"serviceSecret","value":"","type":"secret","enabled":true},
+    {"key":"username","value":"admin","type":"default","enabled":true},
+    {"key":"userId","value":"1","type":"default","enabled":true},
+    {"key":"logId","value":"1","type":"default","enabled":true},
+    {"key":"notificationId","value":"1","type":"default","enabled":true}
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_using": "Postman/10"
+}
