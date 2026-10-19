@@ -1,0 +1,1701 @@
+{
+  "info": {
+    "name": "Sprint 1 Part 1 Assets Threats Vulnerabilities",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Development requests, not execution evidence. Set exact owner prefix, real account IDs and real tokens. Dependencies are required."
+  },
+  "item": [
+    {
+      "name": "Assets",
+      "description": "Use fresh data and execute dependencies in order; see API reference and evidence checklist.",
+      "item": [
+        {
+          "name": "01 Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets",
+            "description": "Create an actual sample record and save its ID. Use a real existing owner; create asset before vulnerability. Expected HTTP 201. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Lab Server\",\n  \"asset_type\": \"Server\",\n  \"ip_address\": \"192.0.2.10\",\n  \"department\": \"IT\",\n  \"owner_id\": {{owner_id}},\n  \"criticality_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.environment.set('asset_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets",
+            "description": "Retrieve all stored records; compare returned array with database. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Retrieve existing record. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 Missing ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/2147483647",
+            "description": "Verify unused nonexistent ID before running. Expected HTTP 404. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/search?department=IT&criticality_level=High",
+            "description": "Demonstrate combined filters; also execute each documented filter separately. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Capture DB before and after. Vulnerability must currently be Open. Expected HTTP 200. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Maintenance\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 Auditor read",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Auditor can read records. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 Employee denied",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Same resource is forbidden to employee; verify automatic audit record. Expected HTTP 403. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 No token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Request without authentication. Expected HTTP 401. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 Invalid token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{invalid_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Invalid token rejected by real identity service. Expected HTTP 401. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 Empty body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets",
+            "description": "Required field validation. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12 Auditor update denied",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Read-only role cannot modify. Expected HTTP 403. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Maintenance\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13 Analyst delete denied",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Analyst cannot delete. Expected HTTP 403. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Asset history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}/history",
+            "description": "Inspect create/update snapshots, acting user and timestamps. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets",
+            "description": "Reject malformed IP. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_name\": \"Lab Server\",\n  \"asset_type\": \"Server\",\n  \"ip_address\": \"999.1.1.1\",\n  \"department\": \"IT\",\n  \"owner_id\": {{owner_id}},\n  \"criticality_level\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Analyst scoped search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/search?department=IT",
+            "description": "Only assigned-incident assets appear. Set up incident and analyst assignment through Part 3. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Threats",
+      "description": "Use fresh data and execute dependencies in order; see API reference and evidence checklist.",
+      "item": [
+        {
+          "name": "01 Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats",
+            "description": "Create an actual sample record and save its ID. Use a real existing owner; create asset before vulnerability. Expected HTTP 201. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Domain\",\n  \"threat_value\": \"example.test\",\n  \"description\": \"Training indicator\",\n  \"severity\": \"High\",\n  \"source\": \"Local exercise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.environment.set('threat_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats",
+            "description": "Retrieve all stored records; compare returned array with database. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Retrieve existing record. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 Missing ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/2147483647",
+            "description": "Verify unused nonexistent ID before running. Expected HTTP 404. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/search?threat_type=Domain&source=Local",
+            "description": "Demonstrate combined filters; also execute each documented filter separately. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Capture DB before and after. Vulnerability must currently be Open. Expected HTTP 200. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"severity\": \"Critical\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 Auditor read",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Auditor can read records. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 Employee denied",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Same resource is forbidden to employee; verify automatic audit record. Expected HTTP 403. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 No token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Request without authentication. Expected HTTP 401. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 Invalid token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{invalid_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Invalid token rejected by real identity service. Expected HTTP 401. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 Empty body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats",
+            "description": "Required field validation. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12 Auditor update denied",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Read-only role cannot modify. Expected HTTP 403. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"severity\": \"Critical\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13 Analyst delete denied",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Analyst cannot delete. Expected HTTP 403. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Duplicate indicator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats",
+            "description": "Execute after creation and before deletion; duplicate type/value rejected. Expected HTTP 409. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"Domain\",\n  \"threat_value\": \"example.test\",\n  \"description\": \"Training indicator\",\n  \"severity\": \"High\",\n  \"source\": \"Local exercise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid file hash",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats",
+            "description": "Reject nonhex/wrong-length hash. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"threat_type\": \"File Hash\",\n  \"threat_value\": \"bad\",\n  \"description\": \"Training indicator\",\n  \"severity\": \"High\",\n  \"source\": \"Local exercise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Vulnerabilities",
+      "description": "Use fresh data and execute dependencies in order; see API reference and evidence checklist.",
+      "item": [
+        {
+          "name": "01 Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities",
+            "description": "Create an actual sample record and save its ID. Use a real existing owner; create asset before vulnerability. Expected HTTP 201. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Training finding\",\n  \"description\": \"Lab only\",\n  \"cve_identifier\": \"CVE-2026-12345\",\n  \"cvss_score\": 8.1,\n  \"severity\": \"High\",\n  \"asset_id\": {{asset_id}},\n  \"discovery_source\": \"Local exercise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.environment.set('vulnerability_id', pm.response.json().data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities",
+            "description": "Retrieve all stored records; compare returned array with database. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Retrieve existing record. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 Missing ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/2147483647",
+            "description": "Verify unused nonexistent ID before running. Expected HTTP 404. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/search?asset_id={{asset_id}}&severity=High",
+            "description": "Demonstrate combined filters; also execute each documented filter separately. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Capture DB before and after. Vulnerability must currently be Open. Expected HTTP 200. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Investigation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 Auditor read",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Auditor can read records. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 Employee denied",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employee_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Same resource is forbidden to employee; verify automatic audit record. Expected HTTP 403. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 No token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Request without authentication. Expected HTTP 401. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 Invalid token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{invalid_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Invalid token rejected by real identity service. Expected HTTP 401. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 Empty body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities",
+            "description": "Required field validation. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12 Auditor update denied",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auditor_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Read-only role cannot modify. Expected HTTP 403. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Under Investigation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13 Analyst delete denied",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Analyst cannot delete. Expected HTTP 403. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid CVSS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities",
+            "description": "Score outside 0..10 rejected. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Training finding\",\n  \"description\": \"Lab only\",\n  \"cve_identifier\": \"CVE-2026-12345\",\n  \"cvss_score\": 11,\n  \"severity\": \"High\",\n  \"asset_id\": {{asset_id}},\n  \"discovery_source\": \"Local exercise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Skipped transition",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Run before reaching Resolved: skipped lifecycle transition rejected. Expected HTTP 400. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Progress In Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Continue from Under Investigation in order; verify generated resolution date. Expected HTTP 200. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Progress Resolved",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Continue from Under Investigation in order; verify generated resolution date. Expected HTTP 200. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Resolved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Progress Closed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{analyst_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Continue from Under Investigation in order; verify generated resolution date. Expected HTTP 200. Actual responses must be captured from the running integrated system.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Run last - authorized deletions",
+      "item": [
+        {
+          "name": "Delete vulnerabilities",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{vulnerabilities_url}}/{{owner_prefix}}/vulnerabilities/{{vulnerability_id}}",
+            "description": "Destructive. Run after screenshots. Delete vulnerability before its asset; incident references can still prevent asset deletion. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete threats",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{threats_url}}/{{owner_prefix}}/threats/{{threat_id}}",
+            "description": "Destructive. Run after screenshots. Delete vulnerability before its asset; incident references can still prevent asset deletion. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete assets",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{assets_url}}/{{owner_prefix}}/assets/{{asset_id}}",
+            "description": "Destructive. Run after screenshots. Delete vulnerability before its asset; incident references can still prevent asset deletion. Expected HTTP 200. Actual responses must be captured from the running integrated system."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
