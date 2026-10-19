@@ -10,7 +10,7 @@ Python, Flask and SQLite backend for reporting, investigating and responding to 
 | Talia Semaan | Users and Identity, Audit Logging, Notifications | talia |
 | Charbel Faddoul | Incidents, Security Reports, Playbooks | charbel |
 
-Shared runtime, database schema and API conventions are in common/ and TEAM_CONTRACT.md. Each member develops assigned services on their branch and submits a pull request to main. Extract all three personal parts alongside the shared files before running the complete system.
+Shared runtime, database schema and API conventions are in common/ and TEAM_CONTRACT.md. All nine services are included in main. Each member submitted their assigned services through a separate pull request: Khalil #1, Charbel #3 and Talia #4, merged on 19 October 2026. A repository clone is ready for setup. For the submission package, extract the three personal ZIPs alongside the shared files before running.
 
 ## Setup
 
@@ -36,7 +36,7 @@ API routes start with the owner's full name from team_config.json, for example /
 
 ## Testing
 
-As implementations are added, run their tests, for example `python -m unittest tests.test_part1 -v`. Isolated tests may substitute external service dependencies; run integration checks against all real services separately. Postman collections and API documentation are stored in each member's owned paths listed in TEAM_CONTRACT.md.
+Run individual service tests, for example `python -m unittest tests.test_part1 -v`. Isolated tests may substitute external service dependencies; run integration checks against all real services separately. Postman collections and API documentation are stored in each member's owned paths listed in TEAM_CONTRACT.md.
 
 ## Complete system startup
 
@@ -49,3 +49,7 @@ As implementations are added, run their tests, for example `python -m unittest t
 The launcher stops all services together on Ctrl+C. Login action labels are coordinated by default; activity reports need no extra environment settings.
 
 Run all tests with `python -m unittest discover -s tests -p "test_*.py" -v`. The full-system test uses all nine actual applications, real HTTP, real password verification and temporary SQLite. These automated checks do not replace the final Postman and database screenshots.
+
+## Report and execution evidence
+
+The repository's common report is in `docs/Common Sprint 1 Report.docx`; the submission ZIP places the same report at its root. Actual Postman and database screenshots are in `screenshots/` in the repository and `evidence/screenshots/` in the submission ZIP. Verified GitHub API contribution records are in `docs/evidence/` in the repository and `evidence/` in the submission ZIP. The submission package also includes the SQL schema, a disposable lab database snapshot and the recorded Postman execution collection. No real service secret or reusable credentials are included.

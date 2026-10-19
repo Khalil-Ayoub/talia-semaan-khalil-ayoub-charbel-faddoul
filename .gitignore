@@ -5,7 +5,7 @@ __pycache__/
 data/*.db
 data/*.db-*
 .env
-evidence/
+/evidence/
 *.zip
 
 # Local handoff and packaging files

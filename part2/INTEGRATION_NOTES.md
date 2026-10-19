@@ -5,5 +5,3 @@ Owner: Talia Semaan. Run users/logs/notifications with python -m part2.app SERVI
 The existing implementation was adjusted to canonical created_date/last_login_date columns and leading-slash URL conventions. Notification creation/read/deletion now produce audit events. Signed tokens still reread current role/status/deletion and expire after eight hours. The new service-key-only GET /internal/users/<id> supplies minimal user state for playbook assignment validation. Login action names are login_succeeded and login_failed.
 
 Tests now use common/schema.sql and close SQLite connections on Windows. Run python -m unittest discover -s tests -p test_part2.py -v. For all-nine-service verification run tests/test_integration.py after extracting every part. No secrets or personal database are included.
-
-Push only part2/, docs/part2/API_REFERENCE.md, postman/part2* and tests/test_part2.py from your own GitHub account on branch talia. The canonical shared files remain on main; update them with git pull or merge before testing. Real Postman/database screenshots and final common report remain separate deliverables.

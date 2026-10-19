@@ -1,0 +1,46 @@
+Final merged main verification on 19 October 2026
+Command: python -m unittest discover -s tests -p "test_*.py" -v
+
+test_nine_services_over_http (test_integration.FullSystemTests.test_nine_services_over_http) ... ok
+test_analyst_asset_scope (test_part1.Part1Tests.test_analyst_asset_scope) ... ok
+test_asset_crud_history_and_search (test_part1.Part1Tests.test_asset_crud_history_and_search) ... ok
+test_asset_invalid_formats_and_types (test_part1.Part1Tests.test_asset_invalid_formats_and_types) ... ok
+test_audit_outage_prevents_mutation (test_part1.Part1Tests.test_audit_outage_prevents_mutation) ... ok
+test_dependency_failure_does_not_write (test_part1.Part1Tests.test_dependency_failure_does_not_write) ... ok
+test_foreign_keys_prevent_asset_deletion (test_part1.Part1Tests.test_foreign_keys_prevent_asset_deletion) ... ok
+test_injection_and_unknown_fields (test_part1.Part1Tests.test_injection_and_unknown_fields) ... ok
+test_internal_asset_helper_requires_service_secret 
+test_log_database_protection (test_part1.Part1Tests.test_log_database_protection) ... ok
+test_missing_and_bad_tokens (test_part1.Part1Tests.test_missing_and_bad_tokens) ... ok
+test_missing_owner_is_rejected (test_part1.Part1Tests.test_missing_owner_is_rejected) ... ok
+test_notification_outage_is_explicit (test_part1.Part1Tests.test_notification_outage_is_explicit) ... ok
+test_read_only_and_analyst_write_boundaries (test_part1.Part1Tests.test_read_only_and_analyst_write_boundaries) ... ok
+test_roles_and_denied_audit (test_part1.Part1Tests.test_roles_and_denied_audit) ... ok
+test_threat_duplicate_normalization (test_part1.Part1Tests.test_threat_duplicate_normalization) ... ok
+test_threat_indicator_validation (test_part1.Part1Tests.test_threat_indicator_validation) ... ok
+test_threat_update_search_and_delete (test_part1.Part1Tests.test_threat_update_search_and_delete) ... ok
+test_vulnerability_lifecycle_and_dates (test_part1.Part1Tests.test_vulnerability_lifecycle_and_dates) ... ok
+test_vulnerability_score_cve_and_reference (test_part1.Part1Tests.test_vulnerability_score_cve_and_reference) ... ok
+test_deleted_users_are_logically_removed_and_tokens_stop_working 
+test_internal_log_requires_service_key_and_valid_fields 
+test_internal_verification_requires_key_and_rereads_account_state 
+test_logs_role_matrix_search_and_empty_user_results 
+test_missing_audit_dependency_returns_503_for_denied_request 
+test_missing_invalid_and_expired_tokens_are_rejected 
+test_notification_internal_recipient_validation_and_auditor_read_only 
+test_notification_ownership_search_and_read_timestamp 
+test_profile_is_owner_scoped_and_role_changes_are_separate 
+test_registration_hashes_password_and_login_returns_token 
+test_registration_rejects_duplicates_bad_email_and_unknown_fields 
+test_registration_rejects_privilege_escalation_and_short_password 
+test_role_and_status_are_reread_for_existing_tokens 
+test_incident_lifecycle_ownership_and_notes (test_part3.Part3Tests.test_incident_lifecycle_ownership_and_notes) ... ok
+test_physical_foreign_keys_and_prefixed_routes (test_part3.Part3Tests.test_physical_foreign_keys_and_prefixed_routes) 
+test_playbook_order_history_and_cascade (test_part3.Part3Tests.test_playbook_order_history_and_cascade) ... ok
+test_playbook_permissions_and_validation (test_part3.Part3Tests.test_playbook_permissions_and_validation) ... ok
+test_reports_empty_denied_and_outages (test_part3.Part3Tests.test_reports_empty_denied_and_outages) ... ok
+test_reports_match_real_records_over_http (test_part3.Part3Tests.test_reports_match_real_records_over_http) ... ok
+test_validation_auth_and_dependencies (test_part3.Part3Tests.test_validation_auth_and_dependencies) ... ok
+----------------------------------------------------------------------
+Ran 40 tests in 28.720s
+OK
