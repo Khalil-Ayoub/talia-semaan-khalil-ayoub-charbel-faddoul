@@ -611,6 +611,22 @@
     {
       "file": "db_vulnerabilities.png",
       "sha256": "f83fa59469349dd9e7e1f0dd03fe93b2dece9802a12f291c42eb42dfa41b3a86"
+    },
+    {
+      "file": "github_charbel_pr3.jpg",
+      "sha256": "82d19e10b06c4e813c43a340ce4db4f995f85980da00cb69229ffef5f15bb480"
+    },
+    {
+      "file": "github_khalil_pr1.jpg",
+      "sha256": "9851af64943cf2fdfddcfa0181da0c35c5f9e87ab0b1d65ce960d5a719ea6a46"
+    },
+    {
+      "file": "github_main_history.jpg",
+      "sha256": "2f0237044795bb0c2fed4f17d7649a43bf6fb0595ab2eff504ac59ceca33eef1"
+    },
+    {
+      "file": "github_talia_pr4.jpg",
+      "sha256": "37cd5dec70d90d2bed2317d4c7b946bed0111522a56bc8af799b2db6c89b3f82"
     }
   ],
   "github_snapshot": {
@@ -621,7 +637,7 @@
       4
     ],
     "state": "MERGED",
-    "source": "Authenticated GitHub API; records and report tables, not browser screenshots"
+    "source": "Four actual signed-in Chrome screenshots, supported by authenticated GitHub API exports"
   },
   "final_tests": {
     "date": "2026-10-19",

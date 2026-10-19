@@ -1,0 +1,26 @@
+{
+  "captured_date": "2026-10-19",
+  "source": "Actual authenticated GitHub pages captured through connected Chrome",
+  "screenshots": [
+    {
+      "file": "github_main_history.jpg",
+      "url": "https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul/commits/main/",
+      "sha256": "2f0237044795bb0c2fed4f17d7649a43bf6fb0595ab2eff504ac59ceca33eef1"
+    },
+    {
+      "file": "github_khalil_pr1.jpg",
+      "url": "https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul/pull/1",
+      "sha256": "9851af64943cf2fdfddcfa0181da0c35c5f9e87ab0b1d65ce960d5a719ea6a46"
+    },
+    {
+      "file": "github_charbel_pr3.jpg",
+      "url": "https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul/pull/3",
+      "sha256": "82d19e10b06c4e813c43a340ce4db4f995f85980da00cb69229ffef5f15bb480"
+    },
+    {
+      "file": "github_talia_pr4.jpg",
+      "url": "https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul/pull/4",
+      "sha256": "37cd5dec70d90d2bed2317d4c7b946bed0111522a56bc8af799b2db6c89b3f82"
+    }
+  ]
+}
