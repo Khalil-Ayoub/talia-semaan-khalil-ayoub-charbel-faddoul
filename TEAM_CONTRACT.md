@@ -16,7 +16,7 @@ The outer package contains exactly three personal ZIPs: `khalil ayoub.zip` (Part
 
 ## Run and naming
 
-GitHub repository: https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul (public). Khalil uses Khalil-Ayoub and branch khalil; Talia uses taliasemaan and branch talia; Charbel uses Charbel-Faddoul (formerly Ta3awon) and branch charbel. Their service pull requests #1, #4 and #3 were merged into main on 19 October 2026. The original student commits and branches are preserved. Personal ZIPs organize the common submission; GitHub history records the actual account contributions.
+GitHub repository: https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul-435L (public). Khalil uses Khalil-Ayoub and branch khalil; Talia uses taliasemaan and branch talia; Charbel uses Charbel-Faddoul (formerly Ta3awon) and branch charbel. Their service pull requests #1, #4 and #3 were merged into main on 19 October 2026. The original student commits and branches are preserved. Personal ZIPs organize the common submission; GitHub history records the actual account contributions.
 
 One Flask process for each service, all on localhost. Ports: users 5001, assets 5002, incidents 5003, threats 5004, logs 5005, reports 5006, vulnerabilities 5007, notifications 5008, playbooks 5009. Entrypoints: `python -m part1.app assets`, `python -m part2.app users`, `python -m part3.app incidents`, similarly for each owned service. No debug mode.
 

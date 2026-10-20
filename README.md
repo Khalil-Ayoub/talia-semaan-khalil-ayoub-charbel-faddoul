@@ -54,4 +54,4 @@ Run all tests with `python -m unittest discover -s tests -p "test_*.py" -v`. The
 
 The repository's common report is in `docs/Common Sprint 1 Report.docx`; the submission ZIP places the same report at its root. Actual Postman, database and GitHub screenshots are in `screenshots/` in the repository and `evidence/screenshots/` in the submission ZIP. Four GitHub screenshots captured on 19 October 2026 show the main commit history and merged student pull requests 1, 3 and 4. Their source URLs and hashes, verified GitHub API contribution records and the final test log are in `docs/evidence/` in the repository and `evidence/` in the submission ZIP. The submission package also includes the SQL schema, a disposable lab database snapshot and the recorded Postman execution collection. No real service secret or reusable credentials are included.
 
-The GitHub repository is public for grading: https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul
+The GitHub repository is public for grading: https://github.com/Khalil-Ayoub/talia-semaan-khalil-ayoub-charbel-faddoul-435L
